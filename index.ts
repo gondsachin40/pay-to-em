@@ -1,47 +1,44 @@
 import express from 'express'
 import type { Request , Response } from "express";
 import { prisma } from "./lib/prisma";
-
+import api from './routes';
 const app = express();
 const PORT = 8080;
 
 app.use(express.json());
 
+app.use("/api/v1" , api);
+
 
 app.get("/", (req : Request, res : Response) => {
-
     res.send("API working 🚀");
 });
 
-
-app.post("/adduser", (req : Request, res : Response) => {
-    const data = req.body;
-    console.log(data);
-    res.send("API working 🚀");
-});
 
 app.post("/user-with-post", async (req, res) => {
   try {
-    const { name, email, title, content } = req.body;
+    // const { name, email, title, content } = req.body;
 
-    const newUser = await prisma.user.create({
-      data: {
-        name,
-        email,
-        posts: {
-          create: {
-            title,
-            content,
-            published: false,
-          },
-        },
-      },
-      include: {
-        posts: true,
-      },
+    // const newUser = await prisma.user.create({
+    //   data: {
+    //     name,
+    //     email,
+    //     posts: {
+    //       create: {
+    //         title,
+    //         content,
+    //         published: false,
+    //       },
+    //     },
+    //   },
+    //   include: {
+    //     posts: true,
+    //   },
+    // });
+
+    res.status(201).json({
+      msg : 'working'
     });
-
-    res.status(201).json(newUser);
   } catch (error) {
     console.error(error);
 
