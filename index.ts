@@ -2,12 +2,13 @@ import express from 'express'
 import type { Request , Response } from "express";
 import { prisma } from "./lib/prisma";
 import api from './routes';
+import middleware from './middlewares/userMiddleware';
 const app = express();
 const PORT = 8080;
 
 app.use(express.json());
 
-app.use("/api/v1" , api);
+app.use("/api/v1"  , api);
 
 
 app.get("/", (req : Request, res : Response) => {
