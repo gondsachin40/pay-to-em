@@ -16,12 +16,15 @@ const middleware = (req: Request, res: Response, next: NextFunction) => {
       return res.status(401).json({ message: "No token provided" });
     }
 
-    const decoded = jwt.verify(token, secretKey);
+    const decoded: any = jwt.verify(token, secretKey);
 
     console.log("decoded token =>", decoded);
 
-    (req as any).user = decoded;
-
+    // (req as any).user = decoded;
+    req.user = {
+      id : decoded._id,
+      userName : decoded.username
+    };
     next();
   } catch (err) {
     return res.status(403).json({ message: "Invalid or expired token" });

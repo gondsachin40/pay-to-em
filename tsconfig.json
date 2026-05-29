@@ -45,6 +45,10 @@
 
 {
   "compilerOptions": {
+      "typeRoots": [
+      "./node_modules/@types",
+      "./src/@types"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "target": "ES2023",

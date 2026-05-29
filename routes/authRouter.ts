@@ -23,39 +23,53 @@ const signInSchema = z.object({
 });
 
 type SignIn = z.infer<typeof signUpSchema>;
-
-authRouter.post('/signup', async(req : Request , res : Response) => {
+const randomBalance = () => {
+    const values = [100, 200, 300, 500, 1000, 2000, 5000, 10000];
+    return values[Math.floor(Math.random() * values.length)];
+}
+authRouter.post('/signup', async (req: Request, res: Response) => {
     const result = signUpSchema.safeParse(req.body);
 
-    if(!result.success){
-        return res.status(404).json({errors : result.error.issues});
+    if (!result.success) {
+        return res.status(404).json({ errors: result.error.issues });
     }
 
     const data = result.data;
-    
-    let User = await prisma.user.findUnique({
-        where : { username : data.username}
-    })
-    if(!User){
+
+    let existingUser = await prisma.user.findUnique({
+        where: { username: data.username }
+    });
+
+    if (existingUser) {
         return res.status(411).json({
-            msg : "username aldready taken / Incorrect inputs",
-        })
+            msg: "username already taken"
+        });
     }
-    data.password = await bcrypt.hash(data.password, saltRounds);
-    
-    const user =  await prisma.user.create({
-        data : {
-            username : data.username,
-            password : data.password
+
+    const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+
+    const user = await prisma.user.create({
+        data: {
+            username: data.username,
+            password: hashedPassword,
+
+            account: {
+                create: {
+                    balance: randomBalance()
+                }
+            }
+        },
+        include: {
+            account: true
         }
-    })
+    });
 
     res.status(200).json({
-        msg : "user signup successfully",
-        data : user
-    })
+        msg: "user signup successfully",
+        data: user
+    });
+});
 
-})
 authRouter.post('/signin', async(req : Request , res : Response) => {
     const result = signInSchema.safeParse(req.body);
 
